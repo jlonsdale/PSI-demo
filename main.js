@@ -59,28 +59,32 @@
   const createSets = (n, m) => {
     // Function to generate an array of random numbers
     const generateRandomNumbers = (length) => {
-      return Array.from(
-        { length },
-        () => Math.floor(Math.random() * 10000) + 1
-      );
+      return Array.from({ length }, () => Math.floor(Math.random() * 1000) + 1);
+    };
+    const shuffleArray = (array) => {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1)); // Get a random index from 0 to i
+        [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+      }
+      return array;
     };
 
     const firstArray = generateRandomNumbers(n);
     const secondArray = generateRandomNumbers(m);
 
     //forcing at least 1 intersection
-    firstArray.push(69);
-    secondArray.push(69);
+    firstArray.push(6100);
+    secondArray.push(6100);
 
-    return [firstArray, secondArray];
+    return [shuffleArray(firstArray), shuffleArray(secondArray)];
   };
 
   ///////////////////////////////
   // Change Length Params Here //
   ///////////////////////////////
 
-  let n = 200; // alice set size
-  let m = 200; // bob set size
+  let n = 100; // alice set size
+  let m = 10; // bob set size
 
   ////////////////////////////
   // Change Batch Size Here //
@@ -88,210 +92,8 @@
 
   let batch_size = 1;
 
-  //const [alice_array, bob_array] = createSets(n, m);
+  const [alice_array, bob_array] = createSets(n, m);
   const [seal_instance, homomorphic_enc_scheme] = await setup();
-
-  const alice_array = [
-    "5550123",
-    "5550456",
-    "5550789",
-    "5550423",
-    "5551345",
-    "5552345",
-    "5551234",
-    "5556789",
-    "5557654",
-    "5554567",
-    "5558901",
-    "5553456",
-    "5550987",
-    "5555678",
-    "5558765",
-    "5552134",
-    "5554321",
-    "5556543",
-    "5550989",
-    "5551199",
-    "5558902",
-    "5553457",
-    "5551235",
-    "5554320",
-    "5552567",
-    "5557890",
-    "5551122",
-    "5551500",
-    "5559000",
-    "5550255",
-    "5550505",
-    "5551100",
-    "5556780",
-    "5552200",
-    "5553333",
-    "5554444",
-    "5555555",
-    "5558888",
-    "5551239",
-    "5554712",
-    "5551890",
-    "5552109",
-    "5554182",
-    "5555120",
-    "5550976",
-    "5556098",
-    "5551245",
-    "5557894",
-    "5556782",
-    "5555670",
-    "5553421",
-    "5557865",
-    "5555432",
-    "5559087",
-    "5552156",
-    "5558163",
-    "5556345",
-    "5552342",
-    "5557070",
-    "5559813",
-    "5553210",
-    "5559191",
-    "5555826",
-    "5552423",
-    "5557878",
-    "5551111",
-    "5555295",
-    "5554333",
-    "5559089",
-    "5552121",
-    "5552789",
-    "5550975",
-    "5551150",
-    "5558800",
-    "5554578",
-    "5552032",
-    "5553124",
-    "5555624",
-    "5557749",
-    "5556429",
-    "5558401",
-    "5557525",
-    "5554171",
-    "5555444",
-    "5553100",
-    "5554359",
-    "5556174",
-    "5557709",
-    "5552456",
-    "5551188",
-    "5557777",
-    "5554888",
-    "5559090",
-    "5553377",
-    "5556269",
-    "5557222",
-    "5554544",
-    "5556943",
-  ];
-
-  const bob_array = [
-    "5553001",
-    "5552345",
-    "5550423",
-    "5551546",
-    "5551890",
-    "5557865",
-    "5555670",
-    "5550123",
-    "5557456",
-    "5558902",
-    "5551390",
-    "5551111",
-    "5552222",
-    "5558888",
-    "5551199",
-    "5554568",
-    "5554001",
-    "5550898",
-    "5558945",
-    "5552189",
-    "5558900",
-    "5553456",
-    "5557654",
-    "5559083",
-    "5551220",
-    "5550299",
-    "5550398",
-    "5554123",
-    "5554567",
-    "5558904",
-    "5558271",
-    "5555231",
-    "5553498",
-    "5550819",
-    "5556667",
-    "5559500",
-    "5555779",
-    "5550987",
-    "5558299",
-    "5559172",
-    "5551119",
-    "5559423",
-    "5555258",
-    "5553221",
-    "5555890",
-    "5557279",
-    "5558101",
-    "5550984",
-    "5550000",
-    "5555466",
-    "5558520",
-    "5557912",
-    "5559057",
-    "5551469",
-    "5552706",
-    "5559777",
-    "5551871",
-    "5554234",
-    "5558364",
-    "5553243",
-    "5551021",
-    "5556482",
-    "5559150",
-    "5556000",
-    "5557777",
-    "5550922",
-    "5551114",
-    "5553457",
-    "5558791",
-    "5554010",
-    "5553045",
-    "5556112",
-    "5555448",
-    "5559132",
-    "5558270",
-    "5557256",
-    "5552500",
-    "5558891",
-    "5557023",
-    "5558395",
-    "5558225",
-    "5552470",
-    "5551800",
-    "5559622",
-    "5553921",
-    "5551223",
-    "5558963",
-    "5557889",
-    "5554851",
-    "5556120",
-    "5559270",
-    "5559221",
-    "5558481",
-    "5557863",
-    "5550384",
-    "5551359",
-    "5559523",
-    "5550118",
-  ];
 
   // Step 2
   const alice_encrypt_elements = ({ alice_array, homomorphic_enc_scheme }) => {
@@ -454,15 +256,18 @@
       // Check if the index is within bounds
       if (index >= 0 && index < aliceArray.length) {
         let common_item = aliceArray[index];
-        bobArray.includes(common_item)
-          ? results.push(common_item)
-          : console.log("fuck bob does not have it - something wrong");
+        if (bobArray.includes(common_item)) {
+          results.push(common_item);
+        } else {
+          console.log(
+            "OH SHIT OH SHIT OH SHIT OH SHIT OH SHIT OH SHIT OH SHIT OH SHIT OH SHIT OH SHIT OH SHIT OH SHIT OH SHIT OH SHIT OH SHIT OH SHIT "
+          );
+        }
       }
     }
     console.log(results);
 
     return results;
   };
-
   process_intersection_indexes(intersection_indexes, alice_array, bob_array);
 })();
