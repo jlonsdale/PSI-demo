@@ -36,7 +36,7 @@
   const createSets = (n, m) => {
     // Function to generate an array of random numbers
     const generateRandomNumbers = (length) => {
-      return Array.from({ length }, () => Math.floor(Math.random() * 1000));
+      return Array.from({ length }, () => Math.floor(Math.random() * 10000));
     };
 
     const firstArray = generateRandomNumbers(n);
@@ -54,7 +54,7 @@
   ///////////////////////////////
 
   let n = 100; // alice set size
-  let m = 10; // bob set size
+  let m = 100; // bob set size
 
   // Change Batch Size Here //
   ////////////////////////////
