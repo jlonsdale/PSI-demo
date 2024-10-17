@@ -1,12 +1,12 @@
-(async () => {
-  const SEAL = require("node-seal");
+const SEAL = require("node-seal");
+var fs = require("fs");
+const doit = async (n, m, batch_size) => {
+  let start = null;
+
   // Step 1
   const setup = async () => {
-    console.log("Participating as Alice");
-    console.log(
-      "=========================\nSTEP 1: Setup\n========================="
-    );
     const seal = await SEAL();
+    start = process.hrtime.bigint();
     const schemeType = seal.SchemeType.bfv;
     const securityLevel = seal.SecurityLevel.tc128;
     const polyModulusDegree = 4096;
@@ -33,6 +33,16 @@
     return [seal, context];
   };
 
+  const elapsed_time = (n, m, batch_size, n_intersections) => {
+    let end = process.hrtime.bigint();
+    const elapsedMilliseconds = end - start;
+    //console.log("time/ms | n | m | batch_size | number of intersections");
+    //console.log(`${elapsedMilliseconds}, ${n}, ${m}, ${batch_size}, ${n_intersections},`);
+    start = null;
+    s = `${elapsedMilliseconds}, ${n}, ${m}, ${batch_size}, ${n_intersections}`;
+    return s;
+  };
+
   const createSets = (n, m) => {
     // Function to generate an array of random numbers
     const generateRandomNumbers = (length) => {
@@ -44,7 +54,7 @@
 
     //forcing at least 1 intersection
     firstArray[5] = 666;
-    secondArray[2] = 666;
+    secondArray[1] = 666;
 
     return [firstArray, secondArray];
   };
@@ -53,16 +63,7 @@
   // Change Length Params Here //
   ///////////////////////////////
 
-  let n = 100; // alice set size
-  let m = 100; // bob set size
-
-  // Change Batch Size Here //
-  ////////////////////////////
-
-  let batch_size = 2;
-
   const [alice_array, bob_array] = createSets(n, m);
-
   const [seal, context] = await setup();
 
   const keyGenerator = seal.KeyGenerator(context);
@@ -89,17 +90,10 @@
     // Encrypt each element in Alice's set
     const set_ciphertexts_alice = encryptor.encrypt(set_plaintexts_alice);
     const set_ciphertexts_alice_string = set_ciphertexts_alice.save();
-    return [
-      set_ciphertexts_alice_string,
-      set_ciphertexts_alice,
-      set_alice_length,
-    ];
+    return [set_ciphertexts_alice_string, set_alice_length];
   };
-  const [
-    set_ciphertexts_alice_string,
-    set_ciphertexts_alice,
-    set_alice_length,
-  ] = alice_encrypt_elements(alice_array);
+  const [set_ciphertexts_alice_string, set_alice_length] =
+    alice_encrypt_elements(alice_array);
 
   // Step 3
   const bob_homomorphic_operations = (
@@ -178,7 +172,7 @@
         }
       }
     }
-    console.log("Finished PSI calculation in\n");
+
     return intersection_indexes;
   };
 
@@ -186,6 +180,8 @@
     final_products,
     set_alice_length
   );
+
+  let logresult = elapsed_time(n, m, batch_size, intersection_indexes.length);
 
   const process_intersection_indexes = (
     intersection_indexes,
@@ -196,8 +192,6 @@
       console.log("no intersection womp womp");
       return;
     }
-
-    console.log(`${intersection_indexes.length} common elements found`);
 
     let results = [];
 
@@ -215,9 +209,36 @@
         }
       }
     }
-    console.log(results);
-
     return results;
   };
   process_intersection_indexes(intersection_indexes, alice_array, bob_array);
-})();
+  return logresult;
+};
+const log = [];
+
+n = 200;
+m = 5;
+
+function logArrayToFile(array) {
+  // Convert the array to a string (with each item on a new line)
+  const data = array.join("\n");
+
+  // Write the string to log.txt
+  fs.writeFile(`log_${n}_${m}.txt`, data, (err) => {
+    if (err) {
+      console.error("Error writing to file:", err);
+    } else {
+      console.log("Array logged to log.txt");
+    }
+  });
+}
+
+async function run() {
+  for (let i = 0; i < 10; i++) {
+    const result = await doit(n, m, 2); // Wait for the promise to resolve
+    log.push(result);
+  }
+  logArrayToFile(log);
+}
+
+run(); // Call the async function to start the process
