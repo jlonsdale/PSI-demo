@@ -43,8 +43,8 @@
     const secondArray = generateRandomNumbers(m);
 
     //forcing at least 1 intersection
-    firstArray.push(6100);
-    secondArray.push(6100);
+    firstArray[5] = 666;
+    secondArray[2] = 666;
 
     return [firstArray, secondArray];
   };
@@ -54,13 +54,12 @@
   ///////////////////////////////
 
   let n = 100; // alice set size
-  let m = 150; // bob set size
+  let m = 10; // bob set size
 
-  ////////////////////////////
   // Change Batch Size Here //
   ////////////////////////////
 
-  let batch_size = 5;
+  let batch_size = 2;
 
   const [alice_array, bob_array] = createSets(n, m);
 
@@ -138,9 +137,9 @@
         final_product
       );
 
-      for (let i = 1; i < set_plaintexts_bob.length; i++) {
+      for (let j = 1; j < set_plaintexts_bob.length; j++) {
         const ith_element_bob = Int32Array.from(
-          Array(set_alice_length).fill(set_plaintexts_bob[i])
+          Array(set_alice_length).fill(set_plaintexts_bob[j])
         );
         const ith_element_bob_encoded = encoder.encode(ith_element_bob);
         const temp = seal.CipherText();
@@ -151,15 +150,6 @@
         );
         evaluator.multiply(final_product, temp, final_product);
       }
-
-      let random_plaintext = new Int32Array(set_alice_length);
-      crypto.getRandomValues(random_plaintext);
-      const random_plaintext_encoded = encoder.encode(random_plaintext);
-      evaluator.multiplyPlain(
-        final_product,
-        random_plaintext_encoded,
-        final_product
-      );
 
       const final_product_string = final_product.save();
       final_products.push(final_product_string);
