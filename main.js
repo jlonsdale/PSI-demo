@@ -1,14 +1,14 @@
 const SEAL = require("node-seal");
 var fs = require("fs");
+
 const doit = async (n, m, batch_size) => {
   let start = null;
 
   // Step 1
   const setup = async () => {
     const seal = await SEAL();
-    start = process.hrtime.bigint();
-    const schemeType = seal.SchemeType.bfv;
-    const securityLevel = seal.SecurityLevel.tc128;
+    const schemeType = seal.SchemeType.bgv;
+    const securityLevel = seal.SecurityLevel.none;
     const polyModulusDegree = 4096;
     const bitSizes = [36, 36, 37];
     const bitSize = 20;
@@ -30,14 +30,18 @@ const doit = async (n, m, batch_size) => {
     // Generate keys and shit //
     ////////////////////////////
 
+    start = process.hrtime.bigint();
+
     return [seal, context];
   };
 
   const elapsed_time = (n, m, batch_size, n_intersections) => {
     let end = process.hrtime.bigint();
     const elapsedMilliseconds = end - start;
-    //console.log("time/ms | n | m | batch_size | number of intersections");
-    //console.log(`${elapsedMilliseconds}, ${n}, ${m}, ${batch_size}, ${n_intersections},`);
+    console.log("time/ms | n | m | batch_size | number of intersections");
+    console.log(
+      `${elapsedMilliseconds}, ${n}, ${m}, ${batch_size}, ${n_intersections},`
+    );
     start = null;
     s = `${elapsedMilliseconds}, ${n}, ${m}, ${batch_size}, ${n_intersections}`;
     return s;
@@ -53,8 +57,8 @@ const doit = async (n, m, batch_size) => {
     const secondArray = generateRandomNumbers(m);
 
     //forcing at least 1 intersection
-    firstArray[5] = 666;
-    secondArray[1] = 666;
+    //firstArray[5] = 666;
+    //secondArray[1] = 666;
 
     return [firstArray, secondArray];
   };
@@ -69,6 +73,7 @@ const doit = async (n, m, batch_size) => {
   const keyGenerator = seal.KeyGenerator(context);
   const publicKey = keyGenerator.createPublicKey();
   const secretKey = keyGenerator.secretKey();
+  const relinKey = keyGenerator.createRelinKeys();
   // Create an Evaluator which will allow HE functions to execute
   const evaluator = seal.Evaluator(context);
   // Create a BatchEncoder (only BFV SchemeType)
@@ -214,11 +219,11 @@ const doit = async (n, m, batch_size) => {
   process_intersection_indexes(intersection_indexes, alice_array, bob_array);
   return logresult;
 };
-const log = [];
+const log = ["time,n,m,batch_size,number_of_intersections,"];
 
-n = 200;
-m = 5;
-
+n = 2000;
+m = 50;
+50;
 function logArrayToFile(array) {
   // Convert the array to a string (with each item on a new line)
   const data = array.join("\n");
@@ -234,9 +239,10 @@ function logArrayToFile(array) {
 }
 
 async function run() {
-  for (let i = 0; i < 10; i++) {
-    const result = await doit(n, m, 2); // Wait for the promise to resolve
+  for (let i = 0; i <= 1050; ) {
+    const result = await doit(n, i, 2); // Wait for the promise to resolve
     log.push(result);
+    i += 50;
   }
   logArrayToFile(log);
 }
